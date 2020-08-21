@@ -15,6 +15,12 @@ class make_circle(FloatLayout):
         with btn.canvas.after:
             btn.line = Line(circle=(btn.center_x, btn.center_y, btn.size[1]/3), width=2)
             
+        btn.bind(pos=self.update_rect, size=self.update_rect)
+    
+    def update_rect(self, instance, value):
+        instance.rect.pos = instance.pos
+        instance.rect.size = instance.size
+            
 class make_cross(FloatLayout):
     def __init__(self,btn,val, **kwargs):
         super(make_cross, self).__init__(**kwargs)
@@ -25,7 +31,13 @@ class make_cross(FloatLayout):
                                     btn.center_y - btn.size[1]/3], width=5)
             btn.line = Line(points=[btn.center_x + btn.size[0]/3, btn.center_y + btn.size[1]/3, btn.center_x - btn.size[0]/3, 
                                     btn.center_y - btn.size[1]/3], width=5)
-
+    
+        btn.bind(pos=self.update_rect, size=self.update_rect)
+    
+    def update_rect(self, instance, value):
+        instance.rect.pos = instance.pos
+        instance.rect.size = instance.size
+        
 class make_circle2(FloatLayout):
     def __init__(self,btn, main_self, **kwargs):
         super(make_circle2, self).__init__(**kwargs)
@@ -33,6 +45,12 @@ class make_circle2(FloatLayout):
         print((main_self.pos_hint))
         with btn.canvas.after:
             btn.line = Line(circle=(main_self.size[0], main_self.size[1], btn.size[1]/3), width=2)
+            
+        btn.bind(pos=self.update_rect, size=self.update_rect)
+    
+    def update_rect(self, instance, value):
+        instance.rect.pos = instance.pos
+        instance.rect.size = instance.size
             
 class make_cross2(FloatLayout):
     def __init__(self,btn, main_self, **kwargs):
@@ -44,6 +62,12 @@ class make_cross2(FloatLayout):
                                     btn.center_y - btn.size[1]/3], width=5)
             btn.line = Line(points=[btn.center_x + btn.size[0]/3, btn.center_y + btn.size[1]/3, btn.center_x - btn.size[0]/3, 
                                     btn.center_y - btn.size[1]/3], width=5)
+    
+        btn.bind(pos=self.update_rect, size=self.update_rect)
+    
+    def update_rect(self, instance, value):
+        instance.rect.pos = instance.pos
+        instance.rect.size = instance.size
     
 
 class lyt(FloatLayout):
