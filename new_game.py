@@ -74,51 +74,51 @@ class lyt(FloatLayout):
         
 #        print(b.pos_hint)
 #       ###########################################################################################
-#        self.b1 = Button(text=str(0),size_hint=(0.33333333333, 0.333333333333),
-#                pos_hint={'x': 0, 'y': 0.67}, background_color =(1,1,1,1), color=[0,0,0,1])
-#        self.f1.add_widget(self.b1)
-##        
-#        self.b2 = Button(text=str(1),size_hint=(0.33333333333, 0.333333333333),
-#                pos_hint={'x': 0.33333333, 'y': 0.67}, background_color =(1,1,1,1), color=[0,0,0,1])
-#        self.f1.add_widget(self.b2)
+        self.b1 = Button(text=str(0),size_hint=(0.33333333333, 0.333333333333),
+                pos_hint={'x': 0, 'y': 0.67}, background_color =(1,1,1,1), color=[0,0,0,1])
+        self.f1.add_widget(self.b1)
 #        
-#        self.b3 = Button(text=str(2),size_hint=(0.33333333333, 0.333333333333),
-#                pos_hint={'x': 0.6666666666666, 'y': 0.67}, background_color =(1,1,1,1), color=[0,0,0,1])
-#        self.f1.add_widget(self.b3)
+        self.b2 = Button(text=str(1),size_hint=(0.33333333333, 0.333333333333),
+                pos_hint={'x': 0.33333333, 'y': 0.67}, background_color =(1,1,1,1), color=[0,0,0,1])
+        self.f1.add_widget(self.b2)
+        
+        self.b3 = Button(text=str(2),size_hint=(0.33333333333, 0.333333333333),
+                pos_hint={'x': 0.6666666666666, 'y': 0.67}, background_color =(1,1,1,1), color=[0,0,0,1])
+        self.f1.add_widget(self.b3)
+#        #########################################################################################
+        self.b4 = Button(text=str(3),size_hint=(0.33333333333, 0.333333333333),
+                pos_hint={'x': 0, 'y': 0.335}, background_color =(1,1,1,1), color=[0,0,0,1])
+        self.f1.add_widget(self.b4)
+        
+        self.b5 = Button(text=str(4),size_hint=(0.33333333333, 0.333333333333),
+                pos_hint={'x': 0.33333333, 'y': 0.335}, background_color =(1,1,1,1), color=[0,0,0,1])
+        self.f1.add_widget(self.b5)
+        
+        self.b6 = Button(text=str(5),size_hint=(0.33333333333, 0.333333333333),
+                pos_hint={'x': 0.6666666666666, 'y': 0.335}, background_color =(1,1,1,1), color=[0,0,0,1])
+        self.f1.add_widget(self.b6)
+#        ###########################################################################################
+        self.b7 = Button(text=str(6),size_hint=(0.33333333333, 0.333333333333),
+                pos_hint={'x': 0, 'y': 0}, background_color =(1,1,1,1), color=[0,0,0,1])
+        self.f1.add_widget(self.b7)
+        
+        self.b8 = Button(text=str(7),size_hint=(0.33333333333, 0.333333333333),
+                pos_hint={'x': 0.33333333, 'y': 0}, background_color =(1,1,1,1), color=[0,0,0,1])
+        self.f1.add_widget(self.b8)
+        
+        self.b9 = Button(text=str(8),size_hint=(0.33333333333, 0.333333333333),
+                pos_hint={'x': 0.6666666666666, 'y': 0}, background_color =(1,1,1,1), color=[0,0,0,1])
+        self.f1.add_widget(self.b9)
 ##        #########################################################################################
-#        self.b4 = Button(text=str(3),size_hint=(0.33333333333, 0.333333333333),
-#                pos_hint={'x': 0, 'y': 0.335}, background_color =(1,1,1,1), color=[0,0,0,1])
-#        self.f1.add_widget(self.b4)
-#        
-#        self.b5 = Button(text=str(4),size_hint=(0.33333333333, 0.333333333333),
-#                pos_hint={'x': 0.33333333, 'y': 0.335}, background_color =(1,1,1,1), color=[0,0,0,1])
-#        self.f1.add_widget(self.b5)
-#        
-#        self.b6 = Button(text=str(5),size_hint=(0.33333333333, 0.333333333333),
-#                pos_hint={'x': 0.6666666666666, 'y': 0.335}, background_color =(1,1,1,1), color=[0,0,0,1])
-#        self.f1.add_widget(self.b6)
-##        ###########################################################################################
-#        self.b7 = Button(text=str(6),size_hint=(0.33333333333, 0.333333333333),
-#                pos_hint={'x': 0, 'y': 0}, background_color =(1,1,1,1), color=[0,0,0,1])
-#        self.f1.add_widget(self.b7)
-#        
-#        self.b8 = Button(text=str(7),size_hint=(0.33333333333, 0.333333333333),
-#                pos_hint={'x': 0.33333333, 'y': 0}, background_color =(1,1,1,1), color=[0,0,0,1])
-#        self.f1.add_widget(self.b8)
-#        
-#        self.b9 = Button(text=str(8),size_hint=(0.33333333333, 0.333333333333),
-#                pos_hint={'x': 0.6666666666666, 'y': 0}, background_color =(1,1,1,1), color=[0,0,0,1])
-#        self.f1.add_widget(self.b9)
-###        #########################################################################################
-#        self.b1.bind(on_press = partial(make_cross, self.b1))
-#        self.b2.bind(on_press = partial(make_circle, self.b2))
-#        self.b3.bind(on_press = partial(make_circle, self.b3))
-#        self.b4.bind(on_press = partial(make_circle, self.b4))
-#        self.b5.bind(on_press = partial(make_circle, self.b5))
-#        self.b6.bind(on_press = partial(make_circle, self.b6))
-#        self.b7.bind(on_press = partial(make_circle, self.b7))
-#        self.b8.bind(on_press = partial(make_circle, self.b8))
-#        self.b9.bind(on_press = partial(make_cross, self.b9))
+        self.b1.bind(on_press = partial(make_cross, self.b1))
+        self.b2.bind(on_press = partial(make_circle, self.b2))
+        self.b3.bind(on_press = partial(make_circle, self.b3))
+        self.b4.bind(on_press = partial(make_circle, self.b4))
+        self.b5.bind(on_press = partial(make_circle, self.b5))
+        self.b6.bind(on_press = partial(make_circle, self.b6))
+        self.b7.bind(on_press = partial(make_circle, self.b7))
+        self.b8.bind(on_press = partial(make_circle, self.b8))
+        self.b9.bind(on_press = partial(make_cross, self.b9))
         #############################################################################################
         self.f2 = FloatLayout(size_hint=(self.size_hint[0]*0.2, self.size_hint[1]*0.2),
                               pos_hint={'x':self.x + self.size_hint[0]*0.05, 'y':self.y+ self.size_hint[1]*0.05})
