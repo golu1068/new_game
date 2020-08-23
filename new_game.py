@@ -96,14 +96,14 @@ def button_click(f2, f3, f1, btn):
         if (re != 0):
             print(re.values())
             with btn.canvas.after:
-                Color(0,1,0,1)
+                Color(255/255,147/255,4/255,1)
                 point_list = list(corner_points)
                 btn_1 = list(re.values())[0][0]
                 btn_1 = btn_self[str(btn_1)]
                 btn_2 = list(re.values())[0][2]
                 btn_2 = btn_self[str(btn_2)]
                 point = [btn_1.center_x, btn_1.center_y, btn_2.center_x, btn_2.center_y]
-                btn.line1 = Line(points=point, width=3)
+                btn.line1 = Line(points=point, width=10)
     ##################################################################################
 #    print(dir(btn.canvas.after.children))
 #    ((btn.canvas.after.children.clear()))    ##3 TO clear the line
