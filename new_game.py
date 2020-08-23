@@ -13,9 +13,17 @@ Config.set('graphics', 'height', '500')
 #from kivy.core.window import Window
 #Window.size = (300, 100)
 ###########################################################################################
+###   0 for ZERO    and   S
+corner_points={};
+data={'1':2,'2':2,'3':2,'4':2,'5':2,'6':2,'7':2,'8':2,'9':2}
+possibilities = {'1':[1,2,3], '2':[1,4,7], '3':[1,5,9], '4':[2,5,8], '5':[3,6,9], '6':[3,5,7], '7':[4,5,6], '8':[7,8,9]}
+btn_self={};
+#######################################################################################
 class make_circle(FloatLayout):
     def __init__(self,btn, **kwargs):
         super(make_circle, self).__init__(**kwargs)
+        global corner_points
+        corner_points[str(btn.text)] = [btn.center_x - btn.size[0]/3, btn.center_y + btn.size[1]/3]
         with btn.canvas.after:
             Color(1., 0, 0, 1)
             btn.line = Line(circle=(btn.center_x, btn.center_y, btn.size[1]/3), width=3)
@@ -27,16 +35,19 @@ class make_circle(FloatLayout):
 #        instance.line.width = instance.width
             
 class make_cross(FloatLayout):
-    def __init__(self,btn, **kwargs):
+    def __init__(self,btn, *args, **kwargs):
         super(make_cross, self).__init__(**kwargs)
+        global corner_points
+        corner_points[str(btn.text)] = [btn.center_x - btn.size[0]/3, btn.center_y + btn.size[1]/3]
         with btn.canvas.after:
-            Color(1., 0, 0, 1)
+            Color(0., 0, 1, 1)
             btn.line1 = Line(points=[btn.center_x - btn.size[0]/3, btn.center_y + btn.size[1]/3, btn.center_x + btn.size[0]/3, 
                                     btn.center_y - btn.size[1]/3], width=3)
             btn.line2 = Line(points=[btn.center_x + btn.size[0]/3, btn.center_y + btn.size[1]/3, btn.center_x - btn.size[0]/3, 
                                     btn.center_y - btn.size[1]/3], width=3)
     
-        btn.bind(pos=self.update_rect, size=self.update_rect)
+        btn.bind(pos=self.update_rect, size=self.update_rect)      
+       
     
     def update_rect(self, instance, value):
         instance.line1.points = [instance.center_x - instance.size[0]/3, instance.center_y + instance.size[1]/3, instance.center_x + instance.size[0]/3, 
@@ -44,8 +55,29 @@ class make_cross(FloatLayout):
         instance.line2.points = [instance.center_x + instance.size[0]/3, instance.center_y + instance.size[1]/3, instance.center_x - instance.size[0]/3, 
                                     instance.center_y - instance.size[1]/3]
 #        instance.line.size = instance.size
-    
-def button_click(f2, f3, btn):
+
+def result_logic(btn, data):
+    global possibilities
+    all_zero=[];all_one=[];result={};
+#    print(data)
+    for i in range(1,len(data)+1):
+        if (data[str(i)] == 0):
+            all_zero.append(i)
+        elif (data[str(i)] == 1):
+            all_one.append(i)
+    if (len(all_one) > 2 or len(all_zero) > 2):
+        for j in range(1,9):
+                if (all(x in all_one for x in possibilities[str(j)]) == True):
+                    result['1'] = possibilities[str(j)]
+                    return result
+                elif (all(x in all_zero for x in possibilities[str(j)]) == True):
+                    result['0'] = possibilities[str(j)]
+                    return result
+    return 0
+
+def button_click(f2, f3, f1, btn):
+    global corner_points, data
+    btn_self[str(btn.text)] = btn
     btn.disabled = True
     if (f3.canvas.before.children[0].rgba == [0,1,0,0.5]):
         draw = 1
@@ -57,7 +89,34 @@ def button_click(f2, f3, btn):
         make_circle(btn)
         f3.canvas.before.children[0].rgba = [0,1,0,0.5]
         f2.canvas.before.children[0].rgba = [1,1,1,0.5]
+    #############################################################################
+    data[str(btn.text)] = draw
+    if (len(data) > 4):
+        re = result_logic(btn, data)
+        if (re != 0):
+            print(re.values())
+            with btn.canvas.after:
+                Color(0,1,0,1)
+                point_list = list(corner_points)
+                btn_1 = list(re.values())[0][0]
+                btn_1 = btn_self[str(btn_1)]
+                btn_2 = list(re.values())[0][2]
+                btn_2 = btn_self[str(btn_2)]
+                point = [btn_1.center_x, btn_1.center_y, btn_2.center_x, btn_2.center_y]
+                btn.line1 = Line(points=point, width=3)
+    ##################################################################################
+#    print(dir(btn.canvas.after.children))
+#    ((btn.canvas.after.children.clear()))    ##3 TO clear the line
 
+    ###############################################################################
+#    if (len(corner_points) == 2):
+#        with btn.canvas.after:
+#            Color(0,0,1,1)
+#            point_list = list(corner_points) 
+#            point = corner_points[point_list[0]] + corner_points[point_list[1]]
+#            btn.line1 = Line(points=point, width=3)
+    ##############################################################################
+        
 class lyt(FloatLayout):
     def __init__(self, **kwargs):
         super(lyt, self).__init__(**kwargs)
@@ -92,39 +151,39 @@ class lyt(FloatLayout):
         self.f1.bind(pos=self.update_rect2, size=self.update_rect2)
 #        self.f1.bind(pos=self.update_rect2, size=partial(self.update_rect2, 'ljvn'))
 #       ###########################################################################################
-        self.b1 = Button(text=str(0),size_hint=(0.28, 0.14),
+        self.b1 = Button(text=str(1),size_hint=(0.28, 0.14),
                 pos_hint={'x': 0.05, 'y': 0.71}, background_color =(1,1,1,0), color=[0,0,0,1])
         self.f1.add_widget(self.b1)
         
-        self.b2 = Button(text=str(1),size_hint=(0.28, 0.14),
+        self.b2 = Button(text=str(2),size_hint=(0.28, 0.14),
                 pos_hint={'x': 0.36, 'y': 0.71}, background_color =(1,1,1,0), color=[0,0,0,1])
         self.f1.add_widget(self.b2)
         
-        self.b3 = Button(text=str(2),size_hint=(0.28, 0.14),
+        self.b3 = Button(text=str(3),size_hint=(0.28, 0.14),
                 pos_hint={'x': 0.67, 'y': 0.71}, background_color =(1,1,1,0), color=[0,0,0,1])
         self.f1.add_widget(self.b3)
 ##        #########################################################################################
-        self.b4 = Button(text=str(3),size_hint=(0.28, 0.14),
+        self.b4 = Button(text=str(4),size_hint=(0.28, 0.14),
                 pos_hint={'x': 0.05, 'y': 0.556}, background_color =(1,1,1,0), color=[0,0,0,1])
         self.f1.add_widget(self.b4)
         
-        self.b5 = Button(text=str(4),size_hint=(0.28, 0.14),
+        self.b5 = Button(text=str(5),size_hint=(0.28, 0.14),
                 pos_hint={'x': 0.36, 'y': 0.556}, background_color =(1,1,1,0), color=[0,0,0,1])
         self.f1.add_widget(self.b5)
         
-        self.b6 = Button(text=str(5),size_hint=(0.28, 0.14),
+        self.b6 = Button(text=str(6),size_hint=(0.28, 0.14),
                 pos_hint={'x': 0.67, 'y': 0.556}, background_color =(1,1,1,0), color=[0,0,0,1])
         self.f1.add_widget(self.b6)
 #        ###########################################################################################
-        self.b7 = Button(text=str(6),size_hint=(0.28, 0.14),
+        self.b7 = Button(text=str(7),size_hint=(0.28, 0.14),
                 pos_hint={'x': 0.05, 'y': 0.4}, background_color =(1,1,1,0), color=[0,0,0,1])
         self.f1.add_widget(self.b7)
         
-        self.b8 = Button(text=str(7),size_hint=(0.28, 0.14),
+        self.b8 = Button(text=str(8),size_hint=(0.28, 0.14),
                 pos_hint={'x': 0.36, 'y': 0.4}, background_color =(1,1,1,0), color=[0,0,0,1])
         self.f1.add_widget(self.b8)
         
-        self.b9 = Button(text=str(8),size_hint=(0.28, 0.14),
+        self.b9 = Button(text=str(9),size_hint=(0.28, 0.14),
                 pos_hint={'x': 0.67, 'y': 0.4}, background_color =(1,1,1,0), color=[0,0,0,1])
         self.f1.add_widget(self.b9)
 ##########################################################################################################################
@@ -158,15 +217,15 @@ class lyt(FloatLayout):
         
         self.f3.bind(pos=self.update_rect6, size=self.update_rect6)
         #############################################################################################
-        self.b1.bind(on_press = partial(button_click, self.f2, self.f3))
-        self.b2.bind(on_press = partial(button_click, self.f2, self.f3))
-        self.b3.bind(on_press = partial(button_click, self.f2, self.f3))
-        self.b4.bind(on_press = partial(button_click, self.f2, self.f3))
-        self.b5.bind(on_press = partial(button_click, self.f2, self.f3))
-        self.b6.bind(on_press = partial(button_click, self.f2, self.f3))
-        self.b7.bind(on_press = partial(button_click, self.f2, self.f3))
-        self.b8.bind(on_press = partial(button_click, self.f2, self.f3))
-        self.b9.bind(on_press = partial(button_click, self.f2, self.f3))
+        self.b1.bind(on_press = partial(button_click, self.f2, self.f3, self.f1))
+        self.b2.bind(on_press = partial(button_click, self.f2, self.f3, self.f1))
+        self.b3.bind(on_press = partial(button_click, self.f2, self.f3, self.f1))
+        self.b4.bind(on_press = partial(button_click, self.f2, self.f3, self.f1))
+        self.b5.bind(on_press = partial(button_click, self.f2, self.f3, self.f1))
+        self.b6.bind(on_press = partial(button_click, self.f2, self.f3, self.f1))
+        self.b7.bind(on_press = partial(button_click, self.f2, self.f3, self.f1))
+        self.b8.bind(on_press = partial(button_click, self.f2, self.f3, self.f1))
+        self.b9.bind(on_press = partial(button_click, self.f2, self.f3, self.f1))
         #############################################################################################
     def update_rect(self, instance, value):
         instance.rect.pos = instance.pos
@@ -200,11 +259,6 @@ class lyt(FloatLayout):
         instance.rect6.size = (self.size[0]*0.3, self.size[1]/2*0.3)
 #        instance.l2.pos = (self.pos[0]+self.size[0]*0.55, self.pos[1]+self.size[1]*0.125)
 #        instance.l2.pos = (instance.rect6.pos[0]-instance.rect6.size[0]*0.15, instance.rect6.pos[1]+instance.rect6.size[1]*0.21)
-        print(self.pos)
-        print(instance.pos)
-        print(instance.rect6.pos)
-        print(instance.rect6.size)
-        
         instance.l2.pos = (self.pos[0]+instance.rect6.pos[0]+instance.rect6.size[0]/2.7, self.pos[1]+instance.rect6.pos[1]+instance.rect6.size[1]*0.7)
         
         instance.line6.points = [instance.rect6.pos[0]+instance.rect6.size[0]*0.2, instance.rect6.pos[1]+instance.rect6.size[1]*0.13,
