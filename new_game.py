@@ -10,14 +10,21 @@ from kivy.uix.label import Label
 from kivy.config import Config
 Config.set('graphics', 'width', '250')
 Config.set('graphics', 'height', '500')
+import time
+import threading
+#from kivymd.toast import toast
+from my_toast import toast
+from kivymd.app import MDApp
 #from kivy.core.window import Window
 #Window.size = (300, 100)
 ###########################################################################################
 ###   0 for ZERO    and   S
 corner_points={};
 data={'1':2,'2':2,'3':2,'4':2,'5':2,'6':2,'7':2,'8':2,'9':2}
-possibilities = {'1':[1,2,3], '2':[1,4,7], '3':[1,5,9], '4':[2,5,8], '5':[3,6,9], '6':[3,5,7], '7':[4,5,6], '8':[7,8,9]}
-btn_self={};
+#possibilities = {'1':[1,2,3], '2':[1,4,7], '3':[1,5,9], '4':[2,5,8], '5':[3,6,9], '6':[3,5,7], '7':[4,5,6], '8':[7,8,9]}
+possibilities = {'1':[[1,2,3],'h'], '2':[[1,4,7],'v'], '3':[[1,5,9],'s1'], '4':[[2,5,8], 'v'], '5':[[3,6,9],'v'], '6':[[3,5,7],'s2'],
+                 '7':[[4,5,6],'h'], '8':[[7,8,9],'h']}
+btn_self={};reset=0;btn_count=0;
 #######################################################################################
 class make_circle(FloatLayout):
     def __init__(self,btn, **kwargs):
@@ -25,7 +32,7 @@ class make_circle(FloatLayout):
         global corner_points
         corner_points[str(btn.text)] = [btn.center_x - btn.size[0]/3, btn.center_y + btn.size[1]/3]
         with btn.canvas.after:
-            Color(1., 0, 0, 1)
+            Color(1., 0, 0, 0.7)
             btn.line = Line(circle=(btn.center_x, btn.center_y, btn.size[1]/3), width=3)
             
         btn.bind(pos=self.update_rect, size=self.update_rect)
@@ -40,7 +47,7 @@ class make_cross(FloatLayout):
         global corner_points
         corner_points[str(btn.text)] = [btn.center_x - btn.size[0]/3, btn.center_y + btn.size[1]/3]
         with btn.canvas.after:
-            Color(0., 0, 1, 1)
+            Color(0., 0, 1, 0.7)
             btn.line1 = Line(points=[btn.center_x - btn.size[0]/3, btn.center_y + btn.size[1]/3, btn.center_x + btn.size[0]/3, 
                                     btn.center_y - btn.size[1]/3], width=3)
             btn.line2 = Line(points=[btn.center_x + btn.size[0]/3, btn.center_y + btn.size[1]/3, btn.center_x - btn.size[0]/3, 
@@ -56,9 +63,9 @@ class make_cross(FloatLayout):
                                     instance.center_y - instance.size[1]/3]
 #        instance.line.size = instance.size
 
-def result_logic(btn, data):
+def result_logic(btn, data, f1):
     global possibilities
-    all_zero=[];all_one=[];result={};
+    all_zero=[];all_one=[];re={};
 #    print(data)
     for i in range(1,len(data)+1):
         if (data[str(i)] == 0):
@@ -67,18 +74,83 @@ def result_logic(btn, data):
             all_one.append(i)
     if (len(all_one) > 2 or len(all_zero) > 2):
         for j in range(1,9):
-                if (all(x in all_one for x in possibilities[str(j)]) == True):
-                    result['1'] = possibilities[str(j)]
-                    return result
-                elif (all(x in all_zero for x in possibilities[str(j)]) == True):
-                    result['0'] = possibilities[str(j)]
-                    return result
+                if (all(x in all_one for x in possibilities[str(j)][0]) == True):
+                    re['1'] = possibilities[str(j)]
+                    with f1.canvas.after:
+                        Color(255/255,147/255,4/255,1)
+                        btn_1 = list(re.values())[0][0]
+                        btn_1 = btn_self[str(btn_1[0])]
+                        btn_2 = list(re.values())[0][0]
+                        btn_2 = btn_self[str(btn_2[2])]
+                        #############################################################################
+                        line_type = list(re.values())[0][1]
+                        if (line_type == 'v'):
+                            point = [btn_1.center_x , btn_1.center_y + btn_1.size[1]/2, 
+                                     btn_2.center_x , btn_2.center_y - btn_1.size[1]/2]
+                        elif (line_type == 'h'):
+                            point = [btn_1.center_x - btn_1.size[0]/2 , btn_1.center_y, 
+                                     btn_2.center_x + btn_1.size[1]/2 , btn_2.center_y]
+                        elif (line_type == 's1'):
+                            point = [btn_1.center_x - btn_1.size[0]/3, btn_1.center_y + btn_1.size[1]/3,
+                                     btn_2.center_x + btn_2.size[0]/3, btn_2.center_y - btn_2.size[1]/3]
+                        elif (line_type == 's2'):
+                            point = [btn_1.center_x + btn_1.size[0]/3, btn_1.center_y + btn_1.size[1]/3,
+                                     btn_2.center_x - btn_2.size[0]/3, btn_2.center_y - btn_2.size[1]/3]
+                        ############################################################################
+                        f1.line1 = Line(points=point, width=10)
+                        f1.canvas.ask_update()
+                        #################################################################################
+                        toast(text='Player won this round', duration=1.5, icon='emoticon-lol')
+                        #######################################################################################
+                    return re
+                elif (all(x in all_zero for x in possibilities[str(j)][0]) == True):
+                    re['0'] = possibilities[str(j)]
+                    with f1.canvas.after:
+                        Color(255/255,147/255,4/255,1)
+                        btn_1 = list(re.values())[0][0]
+                        btn_1 = btn_self[str(btn_1[0])]
+                        btn_2 = list(re.values())[0][0]
+                        btn_2 = btn_self[str(btn_2[2])]
+                        #############################################################################
+                        line_type = list(re.values())[0][1]
+                        if (line_type == 'v'):
+                            point = [btn_1.center_x , btn_1.center_y + btn_1.size[1]/2, 
+                                     btn_2.center_x , btn_2.center_y - btn_1.size[1]/2]
+                        elif (line_type == 'h'):
+                            point = [btn_1.center_x - btn_1.size[0]/2 , btn_1.center_y, 
+                                     btn_2.center_x + btn_1.size[1]/2 , btn_2.center_y]
+                        elif (line_type == 's1'):
+                            point = [btn_1.center_x - btn_1.size[0]/3, btn_1.center_y + btn_1.size[1]/3,
+                                     btn_2.center_x + btn_2.size[0]/3, btn_2.center_y - btn_2.size[1]/3]
+                        elif (line_type == 's2'):
+                            point = [btn_1.center_x + btn_1.size[0]/3, btn_1.center_y + btn_1.size[1]/3,
+                                     btn_2.center_x - btn_2.size[0]/3, btn_2.center_y - btn_2.size[1]/3]
+                        ############################################################################
+                        f1.line1 = Line(points=point, width=10)
+                        #################################################################################
+                        toast(text='Computer won this round', duration=1.5, icon='emoticon-sad')
+                        #######################################################################################
+                    return re
     return 0
+def dis_btn(btn_self, f1):
+    for i in range(1, len(btn_self)+1):
+        btn_self[str(i)].canvas.after.children.clear()
+        f1.canvas.after.children.clear()
+        btn_self[str(i)].disabled = True
+#        btn_self[str(i)].canvas.after.children.clear()
+
+def go_to_reset(btn_self, f1):
+    global reset
+    time.sleep(1)
+    for i in range(1, len(btn_self)+1):
+        btn_self[str(i)].canvas.after.children.clear()
+        f1.canvas.after.children.clear()
+        btn_self[str(i)].disabled = False
 
 def button_click(f2, f3, f1, btn):
-    global corner_points, data
-    btn_self[str(btn.text)] = btn
+    global corner_points, data, btn_self, reset, btn_count
     btn.disabled = True
+    btn_count += 1
     if (f3.canvas.before.children[0].rgba == [0,1,0,0.5]):
         draw = 1
         make_cross(btn)
@@ -91,21 +163,39 @@ def button_click(f2, f3, f1, btn):
         f2.canvas.before.children[0].rgba = [1,1,1,0.5]
     #############################################################################
     data[str(btn.text)] = draw
-    if (len(data) > 4):
-        re = result_logic(btn, data)
+    if (btn_count > 4 and btn_count < 9):
+        re = result_logic(btn, data, f1)
+        print(re)
         if (re != 0):
-            print(re.values())
-            with btn.canvas.after:
-                Color(255/255,147/255,4/255,1)
-                point_list = list(corner_points)
-                btn_1 = list(re.values())[0][0]
-                btn_1 = btn_self[str(btn_1)]
-                btn_2 = list(re.values())[0][2]
-                btn_2 = btn_self[str(btn_2)]
-                point = [btn_1.center_x, btn_1.center_y, btn_2.center_x, btn_2.center_y]
-                btn.line1 = Line(points=point, width=10)
+            #############################################################################################
+            t1 = threading.Thread(target=go_to_reset, args=(btn_self, f1, ))
+            t1.start()
+            data={'1':2,'2':2,'3':2,'4':2,'5':2,'6':2,'7':2,'8':2,'9':2}
+            btn_count=0
+            
+    elif (btn_count == 9):
+        #############################################################################################
+        t1 = threading.Thread(target=go_to_reset, args=(btn_self, f1, ))
+        t1.start()
+        data={'1':2,'2':2,'3':2,'4':2,'5':2,'6':2,'7':2,'8':2,'9':2}
+        btn_count=0
+        toast(text='This round is a draw', duration=1.5, icon='emoticon-happy')
+        #######################################################################################
+            
+            
+#        if (re != 0):
+#            print(re.values())
+#            with btn.canvas.after:
+#                Color(255/255,147/255,4/255,1)
+##                point_list = list(corner_points)
+#                btn_1 = list(re.values())[0][0]
+#                btn_1 = btn_self[str(btn_1)]
+#                btn_2 = list(re.values())[0][2]
+#                btn_2 = btn_self[str(btn_2)]
+#                point = [btn_1.center_x, btn_1.center_y, btn_2.center_x, btn_2.center_y]
+#                btn.line1 = Line(points=point, width=10)
     ##################################################################################
-#    print(dir(btn.canvas.after.children))
+#    print(dir(btn))
 #    ((btn.canvas.after.children.clear()))    ##3 TO clear the line
 
     ###############################################################################
@@ -116,13 +206,14 @@ def button_click(f2, f3, f1, btn):
 #            point = corner_points[point_list[0]] + corner_points[point_list[1]]
 #            btn.line1 = Line(points=point, width=3)
     ##############################################################################
-        
+#    dis_btn(btn_self)
 class lyt(FloatLayout):
     def __init__(self, **kwargs):
         super(lyt, self).__init__(**kwargs)
-        
+        global btn_self
         with self.canvas.before:
-#            Color(1, 1, 0, 0.1) # green; colors range from 0-1 instead of 0-255
+#            Color(255/255,147/255,4/255,1) # green; colors range from 0-1 instead of 0-255
+            Color(0.8,0.8,0.8,1)
             self.rect = Rectangle(size=self.size,
                                pos=self.pos)
             self.rect.source = 'main_lyt.jpg'
@@ -226,7 +317,16 @@ class lyt(FloatLayout):
         self.b7.bind(on_press = partial(button_click, self.f2, self.f3, self.f1))
         self.b8.bind(on_press = partial(button_click, self.f2, self.f3, self.f1))
         self.b9.bind(on_press = partial(button_click, self.f2, self.f3, self.f1))
-        #############################################################################################
+        btn_self[str(self.b1.text)] = self.b1
+        btn_self[str(self.b2.text)] = self.b2
+        btn_self[str(self.b3.text)] = self.b3
+        btn_self[str(self.b4.text)] = self.b4
+        btn_self[str(self.b5.text)] = self.b5
+        btn_self[str(self.b6.text)] = self.b6
+        btn_self[str(self.b7.text)] = self.b7
+        btn_self[str(self.b8.text)] = self.b8
+        btn_self[str(self.b9.text)] = self.b9
+       
     def update_rect(self, instance, value):
         instance.rect.pos = instance.pos
         instance.rect.size = instance.size
@@ -268,7 +368,7 @@ class lyt(FloatLayout):
         
 
 
-class main(App):
+class main(MDApp):
     def build(self):
         return lyt()
 
