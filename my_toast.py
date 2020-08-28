@@ -82,7 +82,7 @@ class Toast(ModalView):
         self.background_color = [0, 0, 0, 0]
         self.background = f"{images_path}transparent.png"
         self.opacity = 0
-        self.auto_dismiss = True
+        self.auto_dismiss = False
 #        self.label_toast = MDFillRoundFlatIconButton(text='vlhweljnbwl',icon=("emoticon-happy"))#Label(size_hint=(None, None), opacity=0)
         self.label_toast = MDFillRoundFlatIconButton()#Label(size_hint=(None, None), opacity=0)
         #####################################################################
@@ -121,6 +121,9 @@ class Toast(ModalView):
 
     def toast(self, text_toast, icon):
         self.pos_hint = {"center_x": 0.5, "center_y": 0.9}
+        self.label_toast._radius = 5
+        self.label_toast.children[0].children[0].text_color = (245/255,195/255,58/255,1)   ## emoji color
+        self.label_toast.md_bg_color = (0,0,0,1)     ## change the button bg col
         self.label_toast.text = text_toast
         self.label_toast.icon = icon
         self.open()
@@ -145,8 +148,7 @@ class Toast(ModalView):
                 self.dismiss()
                 return False
         super(ModalView, self).on_touch_down(touch)
-        return True
-
+        return True    
 
 def toast(text, duration=2.5, icon='emoticon-tounge'):
     Toast(duration=duration).toast(text, icon=icon)
