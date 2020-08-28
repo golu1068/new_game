@@ -87,7 +87,7 @@ class Toast(ModalView):
         self.label_toast = MDFillRoundFlatIconButton()#Label(size_hint=(None, None), opacity=0)
         #####################################################################
         self.label_toast._radius = 5
-        self.label_toast.children[0].children[0].text_color = (1,1,51/255,1)   ## emoji color
+        self.label_toast.children[0].children[0].text_color = (1,1,0,1)   ## emoji color
         self.label_toast.md_bg_color = (0,0,0,1)     ## change the button bg color
          
 #        print(self.label_toast.children[0].spacing)
@@ -107,7 +107,7 @@ class Toast(ModalView):
 
         #############################################################################
         btn_size = self.label_toast.size
-        self.label_check_texture_size(self, btn_size) #
+#        self.label_check_texture_size(self, btn_size) #
 #        self.label_toast.bind(texture_size=self.label_check_texture_size)
         self.add_widget(self.label_toast)
 
@@ -117,10 +117,10 @@ class Toast(ModalView):
             instance.text_size = (Window.width - dp(10), None)
             instance.texture_update()
             texture_width, texture_height = instance.texture_size
-        self.size = (texture_width + 5, texture_height + 5)
+        self.size = (texture_width + 65, texture_height + 45)
 
     def toast(self, text_toast, icon):
-        self.pos_hint = {"center_x": 0.5, "center_y": 0.5}
+        self.pos_hint = {"center_x": 0.5, "center_y": 0.9}
         self.label_toast.text = text_toast
         self.label_toast.icon = icon
         self.open()
