@@ -96,7 +96,7 @@ def result_logic(btn, data, f1, f2, f3):
                         f1.line1 = Line(points=point, width=20)
                         f1.canvas.ask_update()
                         #################################################################################
-#                        toast(text='Player won this round', duration=2.5, icon='emoticon-lol')
+                        toast(text='Player won this round', duration=2.5, icon='emoticon-lol')
                         f3.canvas.before.children[0].rgba = [0,1,0,0.5]
                         f2.canvas.before.children[0].rgba = [1,1,1,0.5]
                         #######################################################################################
@@ -127,35 +127,27 @@ def result_logic(btn, data, f1, f2, f3):
                         ############################################################################
                         f1.line1 = Line(points=point, width=20)
                         #################################################################################
-#                        toast(text='Computer won this round', duration=2.5, icon='emoticon-sad')
+                        toast(text='Computer won this round', duration=2.5, icon='emoticon-sad')
                         f2.canvas.before.children[0].rgba = [0,1,0,0.5]
                         f3.canvas.before.children[0].rgba = [1,1,1,0.5]
                         #######################################################################################
                         o_count += 1
                     return re
     return 0
-def dis_btn(btn_self, f1):
-    for i in range(1, len(btn_self)+1):
-        btn_self[str(i)].canvas.after.children.clear()
-        f1.canvas.after.children.clear()
-        btn_self[str(i)].disabled = True
-#        btn_self[str(i)].canvas.after.children.clear()
 
-def go_to_reset(btn_self, f1, who_win):
-    global reset
-    for i in range(1, len(btn_self)+1):
-        btn_self[str(i)].disabled = True
-    if (who_win == '1'):
-        toast(text='Player won this round', duration=2.5, icon='emoticon-lol')
-    elif (who_win == '0'):
-        toast(text='Computer won this round', duration=2.5, icon='emoticon-sad')
-    elif (who_win == ''):
-        toast(text='This round is a draw', duration=2.5, icon='emoticon-happy')
+def renable(btn_self, f1,):
     time.sleep(2.5)
     for i in range(1, len(btn_self)+1):
         btn_self[str(i)].canvas.after.children.clear()
         f1.canvas.after.children.clear()
         btn_self[str(i)].disabled = False
+
+def go_to_reset(btn_self, f1):
+    for i in range(1, len(btn_self)+1):
+        btn_self[str(i)].disabled = True
+    
+    t2 = threading.Thread(target=renable, args=(btn_self, f1,))
+    t2.start()
 
 def button_click(f2, f3, f1, f4, btn):
     global corner_points, data, btn_self, reset, btn_count, o_count, x_count, draw_count
@@ -186,20 +178,20 @@ def button_click(f2, f3, f1, f4, btn):
         re = result_logic(btn, data, f1, f2, f3)
         if (re != 0):
             #############################################################################################
-            who_win = list(re.keys())[0]
-            t1 = threading.Thread(target=go_to_reset, args=(btn_self, f1, who_win,))
+#            who_win = list(re.keys())[0]
+            t1 = threading.Thread(target=go_to_reset, args=(btn_self, f1,))
             t1.start()
             data={'1':2,'2':2,'3':2,'4':2,'5':2,'6':2,'7':2,'8':2,'9':2}
             btn_count=0
             
         elif (btn_count == 9):
             #############################################################################################
-            who_win = ''
-            t1 = threading.Thread(target=go_to_reset, args=(btn_self, f1, who_win))
+#            who_win = ''
+            t1 = threading.Thread(target=go_to_reset, args=(btn_self, f1,))
             t1.start()
             data={'1':2,'2':2,'3':2,'4':2,'5':2,'6':2,'7':2,'8':2,'9':2}
             btn_count=0
-#            toast(text='This round is a draw', duration=1.5, icon='emoticon-happy')
+            toast(text='This round is a draw', duration=1.5, icon='emoticon-happy')
             draw_count += 1
         L7.text = str(o_count)
         L8.text = str(x_count)
