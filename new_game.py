@@ -1,4 +1,4 @@
-import kivy
+# -*- coding: utf-8 -*-
 from kivy.uix.widget import Widget
 from kivy.config import Config
 from kivy.uix.floatlayout import FloatLayout
@@ -16,7 +16,7 @@ import threading
 from my_toast import toast
 import time
 import random
-from kivy.uix.checkbox import CheckBox
+from kivy.metrics import dp, sp
 ###########################################################################################
 ###   0 for ZERO    and   S
 corner_points={};
@@ -256,7 +256,6 @@ def button_click(f2, f3, f1, f4, btn):
         L9.text = str(draw_count)
         if (ch1 == True):
             if (list(re.keys())[0] == '0'):
-                print('t3')
                 t3 = threading.Thread(target=start_again)
                 t3.start()
         return
@@ -274,14 +273,30 @@ def button_click(f2, f3, f1, f4, btn):
             t3 = threading.Thread(target=start_again)
             t3.start()
         return
-    
     #######################################################################################
     if (ch1 == True):
         if (draw == 1):
             btn_no = comturn(remaining_btn)
             btn_self[str(btn_no)].trigger_action(duration=0)
     ######################################################################################
- 
+
+def check_btn(f1,self, *args):
+    pr = self.id
+    for jj in self.parent.children:
+        if (jj.id == 'ch1'):
+            ch1 = jj
+        elif (jj.id == 'ch2'):
+            ch2 = jj
+    if (pr == 'ch1'):
+        ch2.active = False
+        ch1.active = True
+    elif (pr == 'ch2'):
+        ch2.active = True
+        ch1.active = False
+        
+    go_to_reset(f1, 0, 'check')
+    return
+
 class lyt(FloatLayout):
     def __init__(self, **kwargs):
         super(lyt, self).__init__(**kwargs)
@@ -352,7 +367,7 @@ class lyt(FloatLayout):
         self.f2 = FloatLayout(id='f2',pos_hint={'x':0.05, 'y':0.07}, 
                               size_hint=(0.3,  0.15))
         self.add_widget(self.f2)
-        self.f2.l2 =  Label(id='l2',text="Computer", font_size=15, color=(0, 0, 0, 1),
+        self.f2.l2 =  Label(id='l2',text="Computer", font_size=15, color=(51/255, 25/255, 0, 1),
                             pos_hint = {'center_x':0.5, 'center_y':0.85})
         self.f2.add_widget(self.f2.l2)
         with self.f2.canvas.before:
@@ -368,7 +383,7 @@ class lyt(FloatLayout):
         self.f3 = FloatLayout(id='f3',pos_hint={'x':0.65, 'y':0.07}, 
                               size_hint=(0.3,  0.15))
         self.add_widget(self.f3)
-        self.f3.l3 =  Label(id='l3',text="Player", font_size=15, color=(0, 0, 0, 1), 
+        self.f3.l3 =  Label(id='l3',text="Player", font_size=15, color=(51/255, 25/255, 0, 1), 
                             pos_hint = {'center_x':0.5, 'center_y':0.85})
         self.f3.add_widget(self.f3.l3)
         with self.f3.canvas.before:
@@ -387,27 +402,27 @@ class lyt(FloatLayout):
         self.f4 = FloatLayout(pos_hint={'x':0.05, 'y':0.26}, 
                               size_hint=(0.9,  0.1))
         self.add_widget(self.f4)
-        self.f4.l4 =  Label(id='l4',text="-wins", font_size=15, color=(0, 0, 0, 1),
+        self.f4.l4 =  Label(id='l4',text="-wins", font_size=15, color=(51/255, 25/255, 0, 1),
                             pos_hint = {'center_x':0.19, 'center_y':0.4})
         self.f4.add_widget(self.f4.l4)
         
-        self.f4.l5 =  Label(id='l5',text="-wins", font_size=15, color=(0, 0, 0, 1),
+        self.f4.l5 =  Label(id='l5',text="-wins", font_size=15, color=(51/255, 25/255, 0, 1),
                             pos_hint = {'center_x':0.6, 'center_y':0.4})
         self.f4.add_widget(self.f4.l5)
         
-        self.f4.l6 =  Label(id='l6',text="Draw", font_size=15, color=(0, 0, 0, 1),
+        self.f4.l6 =  Label(id='l6',text="Draw", font_size=15, color=(51/255, 25/255, 0, 1),
                             pos_hint = {'center_x':0.9, 'center_y':0.4})
         self.f4.add_widget(self.f4.l6)
         ###################################################################################################
-        self.f4.l7 =  Label(id='l7',text="0", font_size=15, color=(0, 0, 0, 1),
+        self.f4.l7 =  Label(id='l7',text="0", font_size=15, color=(51/255, 25/255, 0, 1),
                             pos_hint = {'center_x':0.1, 'center_y':0.85})
         self.f4.add_widget(self.f4.l7)
         
-        self.f4.l8 =  Label(id='l8',text="0", font_size=15, color=(0, 0, 0, 1),
+        self.f4.l8 =  Label(id='l8',text="0", font_size=15, color=(51/255, 25/255, 0, 1),
                             pos_hint = {'center_x':0.55, 'center_y':0.85})
         self.f4.add_widget(self.f4.l8)
         
-        self.f4.l9 =  Label(id='l9',text="0", font_size=15, color=(0, 0, 0, 1),
+        self.f4.l9 =  Label(id='l9',text="0", font_size=15, color=(51/255, 25/255, 0, 1),
                             pos_hint = {'center_x':0.9, 'center_y':0.85})
         self.f4.add_widget(self.f4.l9)
         ##############################################################################################
@@ -445,67 +460,85 @@ class lyt(FloatLayout):
         btn_self[str(self.b8.text)] = self.b8
         btn_self[str(self.b9.text)] = self.b9    
     #######################################################################################################
-#        self.f5 = FloatLayout(pos_hint={'x':0.05, 'y':0.95}, 
-#                              size_hint=(0.4,  0.04))
-#        self.add_widget(self.f5)
-#        self.f5.checkbox1 = MDCheckbox(active = True,pos_hint =  {'center_x':0, 'center_y':0.6})
-#        self.f5.add_widget(self.f5.checkbox1)
-##        self.f5.lbl1 = Label(text=' Computer',pos_hint =  {'center_x':0.45, 'center_y':0.5},  
-##                                 color=(51/255, 25/255, 0, 1),bold=True, font_size=30)
-##        self.f5.add_widget(self.f5.lbl1)
-#        
-##        self.f5.checkbox2 = MDCheckbox(active = False, pos_hint = {'center_x': 0.7, 'center_y': 0.5})
-##        self.f5.add_widget(self.f5.checkbox2)
-##        self.f5.lbl2 = Label(text='Friend',pos_hint = {'center_x': 0.87, 'center_y': 0.5},
-##                             color=(51/255, 25/255, 0, 1),bold=True)
-##        self.f5.add_widget(self.f5.lbl2)
-#        print(( self.f5.checkbox1.text))
-#        self.f5.checkbox1.text = 'golu'
-#        print(( self.f5.checkbox1.text))
-#        self.f5.checkbox1.selected_color = (102/255,51/255,0,.8)
-#        self.f5.checkbox1.checkbox_icon_down = 'check'
-##        self.f5.checkbox2.selected_color = (102/255,51/255,0,.8)
-#        with self.f5.canvas.before:
-#            Color(1,0,0,1)
-#            self.f5.rectch = Rectangle(size_hint = self.size_hint, 
-#                                                pos_hint = self.pos_hint)
-#            Color(1,1,1,1)
-#            self.f5.rectch1 = Line(rectangle=(10,0,100,100))
-#            
-#            
-#            
-#        self.f5.bind(pos=self.update_rect_ch, size=self.update_rect_ch)
-    #########################################################################################################
-        self.checkbox1 = MDCheckbox(id='ch1',active = True, pos_hint =  {'center_x':0.1, 'center_y':0.96}, 
-                                    size_hint=(0.1,0.1),group= 'group')
+        self.checkbox3 = MDCheckbox(active = True,pos_hint =  {'center_x':0.1, 'center_y':0.96},
+                                    size_hint=(0.08,0.05))
+        self.add_widget(self.checkbox3)
+        self.checkbox3.checkbox_icon_down = 'checkbox-blank-outline'
+        self.checkbox3.check_anim_in.animated_properties['font_size'] = sp(15)
+        self.checkbox3.unselected_color = (102/255,51/255,0,.8)
+        self.checkbox3.selected_color = (102/255,51/255,0,.8)
+        self.checkbox3.disabled = True
+        self.checkbox3.disabled_color = (102/255,51/255,0,.8)
+        
+        self.checkbox1 = MDCheckbox(id='ch1',active = True,pos_hint =  {'center_x':0.1, 'center_y':0.96},
+                                    size_hint=(0.08,0.05))
         self.add_widget(self.checkbox1)
-        self.checkbox1.bind(active = partial(go_to_reset, self.f1, 0, 'check'))
+        self.checkbox1.checkbox_icon_down = 'check'
+        self.checkbox1.unselected_color = (1,1,1,0)
+        self.checkbox1.selected_color = (1,0,0,1)
+        self.checkbox1.bind(on_press = partial(check_btn, self.f1))
+        self.checkbox1.check_anim_in.animated_properties['font_size'] = sp(30)
         
         self.lbl1 = Label(text='Computer',pos_hint =  {'center_x':0.23, 'center_y':0.96},
                           color=(51/255, 25/255, 0, 1),bold=True)
         self.add_widget(self.lbl1)
         
+        self.checkbox5 = MDCheckbox(active = True,pos_hint =  {'center_x':0.7, 'center_y':0.96},
+                                    size_hint=(0.08,0.05))
+        self.add_widget(self.checkbox5)
+        self.checkbox5.checkbox_icon_down = 'checkbox-blank-outline'
+        self.checkbox5.check_anim_in.animated_properties['font_size'] = sp(15)
+        self.checkbox5.unselected_color = (102/255,51/255,0,.8)
+        self.checkbox5.selected_color = (102/255,51/255,0,.8)
+        self.checkbox5.disabled = True
+        self.checkbox5.disabled_color = (102/255,51/255,0,.8)
+        
         self.checkbox2 = MDCheckbox(id='ch2',active = False,pos_hint =  {'center_x':0.7, 'center_y':0.96},
-                                    size_hint=(0.1,0.1),group= 'group')
+                                    size_hint=(0.08,0.05))
         self.add_widget(self.checkbox2)
-#        self.checkbox2.bind(active = partial(go_to_reset, self.f1, 0, 'check'))
+        self.checkbox2.checkbox_icon_down = 'check'
+        self.checkbox2.unselected_color = (1,1,1,0)
+        self.checkbox2.selected_color = (1,0,0,1)
+        self.checkbox2.bind(on_press = partial(check_btn, self.f1))
+        self.checkbox2.check_anim_in.animated_properties['font_size'] = sp(30)
         
         self.lbl2 = Label(text='Friend',pos_hint =  {'center_x':0.8, 'center_y':0.96},
                           color=(51/255, 25/255, 0, 1),bold=True)
         self.add_widget(self.lbl2)
         
+        self.checkbox2.ripple_scale = 0    ## To disable the button ripple effect
+        self.checkbox1.ripple_scale = 0
+    #########################################################################################################
+#        self.checkbox1 = MDCheckbox(id='ch1',active = True, pos_hint =  {'center_x':0.1, 'center_y':0.96}, 
+#                                    size_hint=(0.08,0.05),group= 'group')
+#        self.add_widget(self.checkbox1)
+#        self.checkbox1.bind(active = partial(go_to_reset, self.f1, 0, 'check'))
         
-        self.checkbox1.selected_color = (102/255,51/255,0,.8)
-        self.checkbox2.selected_color = (102/255,51/255,0,.8)
+#        self.lbl1 = Label(text='Computer',pos_hint =  {'center_x':0.23, 'center_y':0.96},
+#                          color=(51/255, 25/255, 0, 1),bold=True)
+#        self.add_widget(self.lbl1)
+        
+#        self.checkbox2 = MDCheckbox(id='ch2',active = False,pos_hint =  {'center_x':0.7, 'center_y':0.96},
+#                                    size_hint=(0.08,0.05),group= 'group')
+#        self.add_widget(self.checkbox2)
+#        self.checkbox2.bind(active = partial(go_to_reset, self.f1, 0, 'check'))
+        
+#        self.lbl2 = Label(text='Friend',pos_hint =  {'center_x':0.8, 'center_y':0.96},
+#                          color=(51/255, 25/255, 0, 1),bold=True)
+#        self.add_widget(self.lbl2)
+        
+        
+#        self.checkbox1.selected_color = (102/255,51/255,0,.8)
+#        self.checkbox2.selected_color = (102/255,51/255,0,.8)
 #        self.checkbox1.unselected_color = (102/255,51/255,0,.8)
 #        self.checkbox2.unselected_color = (102/255,51/255,0,.8)
 
-        self.checkbox1.checkbox_icon_down = 'check'
-        self.checkbox2.checkbox_icon_down = 'check'
+#        self.checkbox1.checkbox_icon_down = 'check'
+#        self.checkbox2.checkbox_icon_down = 'check'
         
         
-        self.checkbox2.ripple_scale = 0    ## To disable the button ripple effect
-        self.checkbox1.ripple_scale = 0
+#        self.checkbox2.ripple_scale = 0    ## To disable the button ripple effect
+#        self.checkbox1.ripple_scale = 0
 
     ########################################################################################################
     def update_rect(self, instance, value):
