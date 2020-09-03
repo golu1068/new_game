@@ -14,9 +14,12 @@ from kivymd.app import MDApp
 from kivymd.uix.selectioncontrol import MDCheckbox
 import threading
 from my_toast import toast
+#from kivymd.toast.kivytoast.kivytoast import Toast
 import time
 import random
 from kivy.metrics import dp, sp
+from kivy.config import Config
+from kivymd.uix.button import MDFillRoundFlatIconButton
 ###########################################################################################
 ###   0 for ZERO    and   S
 corner_points={};
@@ -25,6 +28,7 @@ data={'1':2,'2':2,'3':2,'4':2,'5':2,'6':2,'7':2,'8':2,'9':2}
 possibilities = {'1':[[1,2,3],'h'], '2':[[1,4,7],'v'], '3':[[1,5,9],'s1'], '4':[[2,5,8], 'v'], '5':[[3,6,9],'v'], '6':[[3,5,7],'s2'],
                  '7':[[4,5,6],'h'], '8':[[7,8,9],'h']}
 btn_self={};reset=0;btn_count=0;o_count=0;x_count=0;draw_count=0;
+
 remaining_btn=[1,2,3,4,5,6,7,8,9];all_zero=[];all_one=[];player=1;com=0;li=[];all_one_com=[]
 #######################################################################################
 class make_circle(FloatLayout):
@@ -62,7 +66,6 @@ class make_cross(FloatLayout):
                                     instance.center_y - instance.size[1]/3]
         instance.line2.points = [instance.center_x + instance.size[0]/3, instance.center_y + instance.size[1]/3, instance.center_x - instance.size[0]/3, 
                                     instance.center_y - instance.size[1]/3]
-
     
 def renable(f1,sleep_time):
     global btn_self, data, all_zero, all_one, remaining_btn
@@ -254,6 +257,14 @@ def button_click(f2, f3, f1, f4, btn):
         L7.text = str(o_count)
         L8.text = str(x_count)
         L9.text = str(draw_count)
+        ###########################################################
+        App.get_running_app().config.set('result','o_win',int(o_count))
+        App.get_running_app().config.write()
+        App.get_running_app().config.set('result','x_win',int(x_count))
+        App.get_running_app().config.write()
+        App.get_running_app().config.set('result','draw',int(draw_count))
+        App.get_running_app().config.write()
+        ###############################################
         if (ch1 == True):
             if (list(re.keys())[0] == '0'):
                 t3 = threading.Thread(target=start_again)
@@ -269,6 +280,14 @@ def button_click(f2, f3, f1, f4, btn):
         L7.text = str(o_count)
         L8.text = str(x_count)
         L9.text = str(draw_count)
+        ###########################################################
+        App.get_running_app().config.set('result','o_win',int(o_count))
+        App.get_running_app().config.write()
+        App.get_running_app().config.set('result','x_win',int(x_count))
+        App.get_running_app().config.write()
+        App.get_running_app().config.set('result','draw',int(draw_count))
+        App.get_running_app().config.write()
+        ###############################################
         if (f2.canvas.before.children[0].rgba == [0,1,0,0.5] and ch1 == True):
             t3 = threading.Thread(target=start_again)
             t3.start()
@@ -298,8 +317,9 @@ def check_btn(f1,self, *args):
     return
 
 class lyt(FloatLayout):
-    def __init__(self, **kwargs):
+    def __init__(self, config, **kwargs):
         super(lyt, self).__init__(**kwargs)
+        global draw_count,x_count,o_count;
         ################################################################
         main_size = Window.size
 #        f0 = FloatLayout(size=main_size)
@@ -410,19 +430,23 @@ class lyt(FloatLayout):
                             pos_hint = {'center_x':0.6, 'center_y':0.4})
         self.f4.add_widget(self.f4.l5)
         
-        self.f4.l6 =  Label(id='l6',text="Draw", font_size=15, color=(51/255, 25/255, 0, 1),
+        self.f4.l6 =  Label(id='l6',text="draw", font_size=15, color=(51/255, 25/255, 0, 1),
                             pos_hint = {'center_x':0.9, 'center_y':0.4})
         self.f4.add_widget(self.f4.l6)
         ###################################################################################################
-        self.f4.l7 =  Label(id='l7',text="0", font_size=15, color=(51/255, 25/255, 0, 1),
+        o_count = int(config.get('result','o_win'))
+        x_count = int(config.get('result','x_win'))
+        draw_count = int(config.get('result','draw'))
+        ##################################################################################
+        self.f4.l7 =  Label(id='l7',text=str(o_count), font_size=15, color=(51/255, 25/255, 0, 1),
                             pos_hint = {'center_x':0.1, 'center_y':0.85})
         self.f4.add_widget(self.f4.l7)
         
-        self.f4.l8 =  Label(id='l8',text="0", font_size=15, color=(51/255, 25/255, 0, 1),
+        self.f4.l8 =  Label(id='l8',text=str(x_count), font_size=15, color=(51/255, 25/255, 0, 1),
                             pos_hint = {'center_x':0.55, 'center_y':0.85})
         self.f4.add_widget(self.f4.l8)
         
-        self.f4.l9 =  Label(id='l9',text="0", font_size=15, color=(51/255, 25/255, 0, 1),
+        self.f4.l9 =  Label(id='l9',text=str(draw_count), font_size=15, color=(51/255, 25/255, 0, 1),
                             pos_hint = {'center_x':0.9, 'center_y':0.85})
         self.f4.add_widget(self.f4.l9)
         ##############################################################################################
@@ -539,7 +563,7 @@ class lyt(FloatLayout):
         
 #        self.checkbox2.ripple_scale = 0    ## To disable the button ripple effect
 #        self.checkbox1.ripple_scale = 0
-
+        
     ########################################################################################################
     def update_rect(self, instance, value):
         instance.rect1.pos = instance.pos
@@ -629,8 +653,16 @@ class lyt(FloatLayout):
         
 class MyApp(MDApp):
 
+    def build_config(self, config):
+        config.setdefaults('result', {
+            'o_win': 0,
+            'x_win': 0,
+            'draw' : 0
+        })
+    
     def build(self):
-        return lyt()
+        config = self.config
+        return lyt(config)
 
 
 if __name__ == '__main__':
