@@ -11,9 +11,12 @@ from kivy.app import App
 from kivy.core.window import Window
 from kivy.uix.label import Label
 from kivymd.app import MDApp
+from kivymd.uix.selectioncontrol import MDCheckbox
 import threading
 from my_toast import toast
 import time
+import random
+from kivy.uix.checkbox import CheckBox
 ###########################################################################################
 ###   0 for ZERO    and   S
 corner_points={};
@@ -22,6 +25,7 @@ data={'1':2,'2':2,'3':2,'4':2,'5':2,'6':2,'7':2,'8':2,'9':2}
 possibilities = {'1':[[1,2,3],'h'], '2':[[1,4,7],'v'], '3':[[1,5,9],'s1'], '4':[[2,5,8], 'v'], '5':[[3,6,9],'v'], '6':[[3,5,7],'s2'],
                  '7':[[4,5,6],'h'], '8':[[7,8,9],'h']}
 btn_self={};reset=0;btn_count=0;o_count=0;x_count=0;draw_count=0;
+remaining_btn=[1,2,3,4,5,6,7,8,9];all_zero=[];all_one=[];player=1;com=0;li=[];all_one_com=[]
 #######################################################################################
 class make_circle(FloatLayout):
     def __init__(self,btn, **kwargs):
@@ -58,100 +62,160 @@ class make_cross(FloatLayout):
                                     instance.center_y - instance.size[1]/3]
         instance.line2.points = [instance.center_x + instance.size[0]/3, instance.center_y + instance.size[1]/3, instance.center_x - instance.size[0]/3, 
                                     instance.center_y - instance.size[1]/3]
-#        instance.line.size = instance.size
 
-def result_logic(btn, data, f1, f2, f3):
-    global possibilities, x_count, o_count
-    all_zero=[];all_one=[];re={};
-    for i in range(1,len(data)+1):
-        if (data[str(i)] == 0):
-            all_zero.append(i)
-        elif (data[str(i)] == 1):
-            all_one.append(i)
-    if (len(all_one) > 2 or len(all_zero) > 2):
-        for j in range(1,9):
-                if (all(x in all_one for x in possibilities[str(j)][0]) == True):
-                    re['1'] = possibilities[str(j)]
-                    with f1.canvas.after:
-                        Color(255/255,147/255,4/255,1)
-                        btn_1 = list(re.values())[0][0]
-                        btn_1 = btn_self[str(btn_1[0])]
-                        btn_2 = list(re.values())[0][0]
-                        btn_2 = btn_self[str(btn_2[2])]
-                        #############################################################################
-                        line_type = list(re.values())[0][1]
-                        if (line_type == 'v'):
-                            point = [btn_1.center_x , btn_1.center_y + btn_1.size[1]/2, 
-                                     btn_2.center_x , btn_2.center_y - btn_1.size[1]/2]
-                        elif (line_type == 'h'):
-                            point = [btn_1.center_x - btn_1.size[0]/2 , btn_1.center_y, 
-                                     btn_2.center_x + btn_1.size[1]/2 , btn_2.center_y]
-                        elif (line_type == 's1'):
-                            point = [btn_1.center_x - btn_1.size[0]/3, btn_1.center_y + btn_1.size[1]/3,
-                                     btn_2.center_x + btn_2.size[0]/3, btn_2.center_y - btn_2.size[1]/3]
-                        elif (line_type == 's2'):
-                            point = [btn_1.center_x + btn_1.size[0]/3, btn_1.center_y + btn_1.size[1]/3,
-                                     btn_2.center_x - btn_2.size[0]/3, btn_2.center_y - btn_2.size[1]/3]
-                        ############################################################################
-                        f1.line1 = Line(points=point, width=20)
-                        f1.canvas.ask_update()
-                        #################################################################################
-                        toast(text='Player won this round', duration=2.5, icon='emoticon-lol')
-                        f3.canvas.before.children[0].rgba = [0,1,0,0.5]
-                        f2.canvas.before.children[0].rgba = [1,1,1,0.5]
-                        #######################################################################################
-                        x_count += 1
-                    return re
-                elif (all(x in all_zero for x in possibilities[str(j)][0]) == True):
-                    re['0'] = possibilities[str(j)]
-                    with f1.canvas.after:
-                        Color(255/255,147/255,4/255,1)
-                        btn_1 = list(re.values())[0][0]
-                        btn_1 = btn_self[str(btn_1[0])]
-                        btn_2 = list(re.values())[0][0]
-                        btn_2 = btn_self[str(btn_2[2])]
-                        #############################################################################
-                        line_type = list(re.values())[0][1]
-                        if (line_type == 'v'):
-                            point = [btn_1.center_x , btn_1.center_y + btn_1.size[1]/2, 
-                                     btn_2.center_x , btn_2.center_y - btn_1.size[1]/2]
-                        elif (line_type == 'h'):
-                            point = [btn_1.center_x - btn_1.size[0]/2 , btn_1.center_y, 
-                                     btn_2.center_x + btn_1.size[1]/2 , btn_2.center_y]
-                        elif (line_type == 's1'):
-                            point = [btn_1.center_x - btn_1.size[0]/3, btn_1.center_y + btn_1.size[1]/3,
-                                     btn_2.center_x + btn_2.size[0]/3, btn_2.center_y - btn_2.size[1]/3]
-                        elif (line_type == 's2'):
-                            point = [btn_1.center_x + btn_1.size[0]/3, btn_1.center_y + btn_1.size[1]/3,
-                                     btn_2.center_x - btn_2.size[0]/3, btn_2.center_y - btn_2.size[1]/3]
-                        ############################################################################
-                        f1.line1 = Line(points=point, width=20)
-                        #################################################################################
-                        toast(text='Computer won this round', duration=2.5, icon='emoticon-sad')
-                        f2.canvas.before.children[0].rgba = [0,1,0,0.5]
-                        f3.canvas.before.children[0].rgba = [1,1,1,0.5]
-                        #######################################################################################
-                        o_count += 1
-                    return re
-    return 0
-
-def renable(btn_self, f1,):
-    time.sleep(2.5)
+    
+def renable(f1,sleep_time):
+    global btn_self, data, all_zero, all_one, remaining_btn
+    time.sleep(sleep_time)
     for i in range(1, len(btn_self)+1):
         btn_self[str(i)].canvas.after.children.clear()
         f1.canvas.after.children.clear()
         btn_self[str(i)].disabled = False
+    return
 
-def go_to_reset(btn_self, f1):
+def go_to_reset(f1, sleep_time, *args):
+    global btn_self, data, all_zero, all_one, remaining_btn, btn_count
     for i in range(1, len(btn_self)+1):
         btn_self[str(i)].disabled = True
     
-    t2 = threading.Thread(target=renable, args=(btn_self, f1,))
+    t2 = threading.Thread(target=renable, args=(f1, sleep_time,))
     t2.start()
+    for ii in f1.parent.children:
+        if (ii.id == 'f2'):
+            f2  = ii
+        elif (ii.id == 'f3'):
+            f3 = ii
+    try:
+        if (args[0] == 'check'):
+            f2.canvas.before.children[0].rgba = [1,1,1,0.5]
+            f3.canvas.before.children[0].rgba = [0,1,0,0.5]
+    except:
+        pass
+    data={'1':2,'2':2,'3':2,'4':2,'5':2,'6':2,'7':2,'8':2,'9':2}
+    btn_count=0
+    all_zero=[];all_one=[];
+    remaining_btn=[1,2,3,4,5,6,7,8,9]
+    return
+    
+
+def winner_check(f1, f2, f3, all_zero, all_one):
+    global possibilities, x_count, o_count,data
+    re={};
+    for j in range(1,9):
+        if (all(x in all_one for x in possibilities[str(j)][0]) == True or all(x in all_zero for x in possibilities[str(j)][0]) == True):
+            li = data[str(possibilities[str(j)][0][0])]
+            if (li == 1):
+                re['1'] = possibilities[str(j)]
+            elif (li == 0):
+                re['0'] = possibilities[str(j)]
+            with f1.canvas.after:
+                Color(255/255,147/255,4/255,1)
+                btn_1 = list(re.values())[0][0]
+                btn_1 = btn_self[str(btn_1[0])]
+                btn_2 = list(re.values())[0][0]
+                btn_2 = btn_self[str(btn_2[2])]
+                #############################################################################
+                line_type = list(re.values())[0][1]
+                if (line_type == 'v'):
+                    point = [btn_1.center_x , btn_1.center_y + btn_1.size[1]/2, 
+                             btn_2.center_x , btn_2.center_y - btn_1.size[1]/2]
+                elif (line_type == 'h'):
+                    point = [btn_1.center_x - btn_1.size[0]/2 , btn_1.center_y, 
+                             btn_2.center_x + btn_1.size[1]/2 , btn_2.center_y]
+                elif (line_type == 's1'):
+                    point = [btn_1.center_x - btn_1.size[0]/3, btn_1.center_y + btn_1.size[1]/3,
+                             btn_2.center_x + btn_2.size[0]/3, btn_2.center_y - btn_2.size[1]/3]
+                elif (line_type == 's2'):
+                    point = [btn_1.center_x + btn_1.size[0]/3, btn_1.center_y + btn_1.size[1]/3,
+                             btn_2.center_x - btn_2.size[0]/3, btn_2.center_y - btn_2.size[1]/3]
+                ############################################################################
+                if (li == 1):
+                    f1.line1 = Line(points=point, width=20)
+                    f1.canvas.ask_update()
+                    #################################################################################
+                    toast(text='Player won this round', duration=2.5, icon='emoticon-lol')
+                    f3.canvas.before.children[0].rgba = [0,1,0,0.5]
+                    f2.canvas.before.children[0].rgba = [1,1,1,0.5]
+                    #######################################################################################
+                    x_count += 1
+                elif (li == 0):
+                    ############################################################################
+                    f1.line1 = Line(points=point, width=20)
+                    #################################################################################
+                    toast(text='Computer won this round', duration=2.5, icon='emoticon-sad')
+                    f2.canvas.before.children[0].rgba = [0,1,0,0.5]
+                    f3.canvas.before.children[0].rgba = [1,1,1,0.5]
+                    #######################################################################################
+                    o_count += 1
+            return re
+def iswinner(curr):
+    global li
+    for i in remaining_btn:
+        li.append(i)
+        for j in range(1,9):
+            if (all(x in li for x in possibilities[str(j)][0]) == True):
+                return i
+            else:
+                pass
+        li = list(curr)
+
+def chooseRandomMoveFromList(remaining_btn, movesList):
+        possibelmove=[];
+        
+        for i in movesList:
+            if (i in remaining_btn):
+                possibelmove.append(i)
+        
+        if len(possibelmove) != 0:
+            return random.choice(possibelmove)
+        else:
+            return None
+
+def comturn(remaining_btn):
+    global btn_self, all_zero,li, all_one
+    ################################################################
+    # First, check if we can win in the next move
+    li = list(all_zero)
+    win = iswinner(all_zero)
+    if (win != None):
+        return win
+    ########################################################################
+    # Check if the player could win on his next move, and block them.
+    li = list(all_one)
+    win = iswinner(all_one)
+    if (win != None):
+        return win
+    ##########################################################################
+    # Try to take one of the corners, if they are free.
+    move = chooseRandomMoveFromList(remaining_btn, [1,3,7,9])
+    if move != None:
+        return move
+    ################################################################
+    # Try to take the center, if it is free.
+    move = chooseRandomMoveFromList(remaining_btn, [5])
+    if move != None:
+        return move
+    ###########################################################
+    # Move on one of the sides.
+    return chooseRandomMoveFromList(remaining_btn, [2, 4, 6, 8])
+    ########################################################################
+
+def start_again():
+    global remaining_btn, btn_self
+    time.sleep(2.5)
+    btn_no = comturn(remaining_btn)
+    btn_self[str(btn_no)].trigger_action(duration=0)
 
 def button_click(f2, f3, f1, f4, btn):
-    global corner_points, data, btn_self, reset, btn_count, o_count, x_count, draw_count
+    global corner_points, data, btn_self, reset, btn_count, o_count, x_count, draw_count, possibilities
+    global all_zero, all_one, remaining_btn
     btn.disabled = True
+    ###########################################################################
+    for kk in f1.parent.children:
+        if kk.id == 'ch1':
+            ch1 = kk.active
+        elif (kk.id == 'ch2'):
+            ch2 = kk.active
     ##################################################################################
     for m in (f4.children):
         if (m.id == 'l7'):
@@ -174,53 +238,50 @@ def button_click(f2, f3, f1, f4, btn):
         f2.canvas.before.children[0].rgba = [1,1,1,0.5]
     #############################################################################
     data[str(btn.text)] = draw
-    if (btn_count > 4 and btn_count < 10):
-        re = result_logic(btn, data, f1, f2, f3)
-        if (re != 0):
-            #############################################################################################
+    remaining_btn.remove(int(btn.text))
+    if (draw == 0):
+        all_zero.append(int(btn.text))
+    else:
+        all_one.append(int(btn.text))
+#    if (btn_count > 4 and btn_count < 10):
+    re = winner_check(f1, f2, f3, all_zero, all_one)#result_logic(btn, data, f1, f2, f3)
+    if (re != 0 and re != None):
+        #############################################################################################
 #            who_win = list(re.keys())[0]
-            t1 = threading.Thread(target=go_to_reset, args=(btn_self, f1,))
-            t1.start()
-            data={'1':2,'2':2,'3':2,'4':2,'5':2,'6':2,'7':2,'8':2,'9':2}
-            btn_count=0
-            
-        elif (btn_count == 9):
-            #############################################################################################
-#            who_win = ''
-            t1 = threading.Thread(target=go_to_reset, args=(btn_self, f1,))
-            t1.start()
-            data={'1':2,'2':2,'3':2,'4':2,'5':2,'6':2,'7':2,'8':2,'9':2}
-            btn_count=0
-            toast(text='This round is a draw', duration=1.5, icon='emoticon-happy')
-            draw_count += 1
+        t1 = threading.Thread(target=go_to_reset, args=(f1, 2.5))
+        t1.start()
+        t1.join()
         L7.text = str(o_count)
         L8.text = str(x_count)
         L9.text = str(draw_count)
-            #######################################################################################
-#        if (re != 0):
-#            print(re.values())
-#            with btn.canvas.after:
-#                Color(255/255,147/255,4/255,1)
-##                point_list = list(corner_points)
-#                btn_1 = list(re.values())[0][0]
-#                btn_1 = btn_self[str(btn_1)]
-#                btn_2 = list(re.values())[0][2]
-#                btn_2 = btn_self[str(btn_2)]
-#                point = [btn_1.center_x, btn_1.center_y, btn_2.center_x, btn_2.center_y]
-#                btn.line1 = Line(points=point, width=10)
-    ##################################################################################
-#    print(dir(btn))
-#    ((btn.canvas.after.children.clear()))    ##3 TO clear the line
-
-    ###############################################################################
-#    if (len(corner_points) == 2):
-#        with btn.canvas.after:
-#            Color(0,0,1,1)
-#            point_list = list(corner_points) 
-#            point = corner_points[point_list[0]] + corner_points[point_list[1]]
-#            btn.line1 = Line(points=point, width=3)
-    ##############################################################################
-#    dis_btn(btn_self)
+        if (ch1 == True):
+            if (list(re.keys())[0] == '0'):
+                print('t3')
+                t3 = threading.Thread(target=start_again)
+                t3.start()
+        return
+    elif (btn_count == 9):
+        #############################################################################################
+#            who_win = ''
+        t1 = threading.Thread(target=go_to_reset, args=(f1, 2.5))
+        t1.start()
+        toast(text='This round is a draw', duration=1.5, icon='emoticon-happy')
+        draw_count += 1
+        L7.text = str(o_count)
+        L8.text = str(x_count)
+        L9.text = str(draw_count)
+        if (f2.canvas.before.children[0].rgba == [0,1,0,0.5] and ch1 == True):
+            t3 = threading.Thread(target=start_again)
+            t3.start()
+        return
+    
+    #######################################################################################
+    if (ch1 == True):
+        if (draw == 1):
+            btn_no = comturn(remaining_btn)
+            btn_self[str(btn_no)].trigger_action(duration=0)
+    ######################################################################################
+ 
 class lyt(FloatLayout):
     def __init__(self, **kwargs):
         super(lyt, self).__init__(**kwargs)
@@ -288,7 +349,7 @@ class lyt(FloatLayout):
                 pos_hint={'x': 0.69, 'y': 0.01}, background_color =(1,1,1,0), color=[0,0,0,0], disabled_color=[0,0,0,0])
         self.f1.add_widget(self.b9)
 ###########################################################################################################################
-        self.f2 = FloatLayout(pos_hint={'x':0.05, 'y':0.07}, 
+        self.f2 = FloatLayout(id='f2',pos_hint={'x':0.05, 'y':0.07}, 
                               size_hint=(0.3,  0.15))
         self.add_widget(self.f2)
         self.f2.l2 =  Label(id='l2',text="Computer", font_size=15, color=(0, 0, 0, 1),
@@ -304,7 +365,7 @@ class lyt(FloatLayout):
         self.f2.bind(pos=self.update_rect2, size=self.update_rect2)
 #        
         ###############################################################################################
-        self.f3 = FloatLayout(pos_hint={'x':0.65, 'y':0.07}, 
+        self.f3 = FloatLayout(id='f3',pos_hint={'x':0.65, 'y':0.07}, 
                               size_hint=(0.3,  0.15))
         self.add_widget(self.f3)
         self.f3.l3 =  Label(id='l3',text="Player", font_size=15, color=(0, 0, 0, 1), 
@@ -357,6 +418,7 @@ class lyt(FloatLayout):
             Color(1,0,0,0.5)
             self.f4.line8 = Line(circle=(self.f4.size[0]+25, self.f4.size[1]-20, self.f4.size[1]/3), width=6)
             
+            Color(0,0,1,0.5)
             self.f4.line9 = Line(points=[self.f4.center_x - self.f4.size[0]/4, self.f4.center_y + self.f4.size[1]/4, 
                                          self.f4.center_x + self.f4.size[0]/4, self.f4.center_y - self.f4.size[1]/4], width=6)
             self.f4.line10 = Line(points=[self.f4.center_x + self.f4.size[0]/4, self.f4.center_y + self.f4.size[1]/4, 
@@ -383,6 +445,69 @@ class lyt(FloatLayout):
         btn_self[str(self.b8.text)] = self.b8
         btn_self[str(self.b9.text)] = self.b9    
     #######################################################################################################
+#        self.f5 = FloatLayout(pos_hint={'x':0.05, 'y':0.95}, 
+#                              size_hint=(0.4,  0.04))
+#        self.add_widget(self.f5)
+#        self.f5.checkbox1 = MDCheckbox(active = True,pos_hint =  {'center_x':0, 'center_y':0.6})
+#        self.f5.add_widget(self.f5.checkbox1)
+##        self.f5.lbl1 = Label(text=' Computer',pos_hint =  {'center_x':0.45, 'center_y':0.5},  
+##                                 color=(51/255, 25/255, 0, 1),bold=True, font_size=30)
+##        self.f5.add_widget(self.f5.lbl1)
+#        
+##        self.f5.checkbox2 = MDCheckbox(active = False, pos_hint = {'center_x': 0.7, 'center_y': 0.5})
+##        self.f5.add_widget(self.f5.checkbox2)
+##        self.f5.lbl2 = Label(text='Friend',pos_hint = {'center_x': 0.87, 'center_y': 0.5},
+##                             color=(51/255, 25/255, 0, 1),bold=True)
+##        self.f5.add_widget(self.f5.lbl2)
+#        print(( self.f5.checkbox1.text))
+#        self.f5.checkbox1.text = 'golu'
+#        print(( self.f5.checkbox1.text))
+#        self.f5.checkbox1.selected_color = (102/255,51/255,0,.8)
+#        self.f5.checkbox1.checkbox_icon_down = 'check'
+##        self.f5.checkbox2.selected_color = (102/255,51/255,0,.8)
+#        with self.f5.canvas.before:
+#            Color(1,0,0,1)
+#            self.f5.rectch = Rectangle(size_hint = self.size_hint, 
+#                                                pos_hint = self.pos_hint)
+#            Color(1,1,1,1)
+#            self.f5.rectch1 = Line(rectangle=(10,0,100,100))
+#            
+#            
+#            
+#        self.f5.bind(pos=self.update_rect_ch, size=self.update_rect_ch)
+    #########################################################################################################
+        self.checkbox1 = MDCheckbox(id='ch1',active = True, pos_hint =  {'center_x':0.1, 'center_y':0.96}, 
+                                    size_hint=(0.1,0.1),group= 'group')
+        self.add_widget(self.checkbox1)
+        self.checkbox1.bind(active = partial(go_to_reset, self.f1, 0, 'check'))
+        
+        self.lbl1 = Label(text='Computer',pos_hint =  {'center_x':0.23, 'center_y':0.96},
+                          color=(51/255, 25/255, 0, 1),bold=True)
+        self.add_widget(self.lbl1)
+        
+        self.checkbox2 = MDCheckbox(id='ch2',active = False,pos_hint =  {'center_x':0.7, 'center_y':0.96},
+                                    size_hint=(0.1,0.1),group= 'group')
+        self.add_widget(self.checkbox2)
+#        self.checkbox2.bind(active = partial(go_to_reset, self.f1, 0, 'check'))
+        
+        self.lbl2 = Label(text='Friend',pos_hint =  {'center_x':0.8, 'center_y':0.96},
+                          color=(51/255, 25/255, 0, 1),bold=True)
+        self.add_widget(self.lbl2)
+        
+        
+        self.checkbox1.selected_color = (102/255,51/255,0,.8)
+        self.checkbox2.selected_color = (102/255,51/255,0,.8)
+#        self.checkbox1.unselected_color = (102/255,51/255,0,.8)
+#        self.checkbox2.unselected_color = (102/255,51/255,0,.8)
+
+        self.checkbox1.checkbox_icon_down = 'check'
+        self.checkbox2.checkbox_icon_down = 'check'
+        
+        
+        self.checkbox2.ripple_scale = 0    ## To disable the button ripple effect
+        self.checkbox1.ripple_scale = 0
+
+    ########################################################################################################
     def update_rect(self, instance, value):
         instance.rect1.pos = instance.pos
         instance.rect1.size = instance.size
@@ -450,6 +575,24 @@ class lyt(FloatLayout):
         instance.l8.font_size = instance.size[1]*0.33
         instance.l9.pos = instance.pos
         instance.l9.font_size = instance.size[1]*0.33
+        
+    def update_rect_ch(self, instance, value):
+        print(instance.size)
+        instance.rectch1.rectangle = [instance.pos[0], instance.pos[1]+instance.size[1]/3.5, instance.size[0]/7,instance.size[0]/7]
+        instance.rectch.pos = instance.pos
+        instance.rectch.size = instance.size
+        instance.lbl1.pos = [instance.pos[0], instance.pos[1]]
+        instance.lbl1.font_size = instance.size[0]/7
+#        print(instance.lbl1.pos)
+#        instance.lbl2.pos = instance.pos
+        instance.checkbox1.pos_hint = {'center_x':0., 'center_y':0.6}
+#        instance.checkbox2.pos = instance.pos
+        instance.checkbox1.size = instance.size
+#        instance.checkbox2.size = instance.size
+        
+#        print(dir(instance.checkbox1))
+        
+    
         
 class MyApp(MDApp):
 
