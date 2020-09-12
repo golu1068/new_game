@@ -532,38 +532,6 @@ class lyt(FloatLayout):
         
         self.checkbox2.ripple_scale = 0    ## To disable the button ripple effect
         self.checkbox1.ripple_scale = 0
-    #########################################################################################################
-#        self.checkbox1 = MDCheckbox(id='ch1',active = True, pos_hint =  {'center_x':0.1, 'center_y':0.96}, 
-#                                    size_hint=(0.08,0.05),group= 'group')
-#        self.add_widget(self.checkbox1)
-#        self.checkbox1.bind(active = partial(go_to_reset, self.f1, 0, 'check'))
-        
-#        self.lbl1 = Label(text='Computer',pos_hint =  {'center_x':0.23, 'center_y':0.96},
-#                          color=(51/255, 25/255, 0, 1),bold=True)
-#        self.add_widget(self.lbl1)
-        
-#        self.checkbox2 = MDCheckbox(id='ch2',active = False,pos_hint =  {'center_x':0.7, 'center_y':0.96},
-#                                    size_hint=(0.08,0.05),group= 'group')
-#        self.add_widget(self.checkbox2)
-#        self.checkbox2.bind(active = partial(go_to_reset, self.f1, 0, 'check'))
-        
-#        self.lbl2 = Label(text='Friend',pos_hint =  {'center_x':0.8, 'center_y':0.96},
-#                          color=(51/255, 25/255, 0, 1),bold=True)
-#        self.add_widget(self.lbl2)
-        
-        
-#        self.checkbox1.selected_color = (102/255,51/255,0,.8)
-#        self.checkbox2.selected_color = (102/255,51/255,0,.8)
-#        self.checkbox1.unselected_color = (102/255,51/255,0,.8)
-#        self.checkbox2.unselected_color = (102/255,51/255,0,.8)
-
-#        self.checkbox1.checkbox_icon_down = 'check'
-#        self.checkbox2.checkbox_icon_down = 'check'
-        
-        
-#        self.checkbox2.ripple_scale = 0    ## To disable the button ripple effect
-#        self.checkbox1.ripple_scale = 0
-        
     ########################################################################################################
     def update_rect(self, instance, value):
         instance.rect1.pos = instance.pos
